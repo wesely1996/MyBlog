@@ -1,8 +1,10 @@
 const http = require("http")
 const fs = require("fs")
+const _ = require("lodash")
 
 const server = http.createServer((req,res)=>{
-    console.log(req.url, req.method)
+
+    const greet = _.once(()=>{console.log("Hello.")})
 
     res.setHeader('Content-Text','text/html')
 
