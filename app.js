@@ -1,6 +1,8 @@
 const express = require("express");
+const fs = require('fs');
 
 const app = express();
+let blogs = [];
 
 //register view engine
 app.set('view engine', 'ejs');
@@ -17,21 +19,30 @@ app.use((req, res, next) => {
 
 app.use(express.static('public'));
 
+const blogsPath = "./public/blogs.json";
+fs.readFile(blogsPath, (err, data)=>{
+    if(err){
+        console.log(err);
+    }else{
+        blogs = JSON.parse(data);
+    }
+});
+
+app.get('/add-blog', (req, res)=>{
+    const blog = {id: 0, title: "", snippet: "", body: ""};
+    fs.readFile(blogsPath, 'utf8', function readFileCallback(err, data){
+        if (err){
+            console.log(err);
+        } else {
+        obj = JSON.parse(data);
+        obj.push(blog);
+        json = JSON.stringify(obj); //convert it back to json
+        fs.writeFile(blogsPath, json, 'utf8', ()=>{}); // write it back 
+    }});
+    res.send(blog);
+});
+
 app.get('/', (req, res) => {
-    const blogs = [
-        {
-            title: "Telstra Telecom Suffers Data Breach Potentially Exposing Employee Information",
-            snippet: "Australia's largest telecommunications company Telstra disclosed that it was the victim of a data breach through a..."
-        },
-        {
-            title: "Experts Warn of New RatMilad Android Spyware Targeting Enterprise Devices",
-            snippet: "A novel Android malware called RatMilad has been observed targeting a Middle Eastern enterprise mobile device by concealing itself as a VPN and phone number..."
-        },
-        {
-            title: "FBI, CISA, and NSA Reveal How Hackers Targeted a Defense Industrial Base Organization",
-            snippet: "U.S. cybersecurity and intelligence agencies on Tuesday disclosed that multiple nation-state hacking groups..."
-        }
-    ]
     res.render('index', {title: 'Home', blogs});
 });
 
